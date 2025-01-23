@@ -3,7 +3,7 @@
 # This class provides an abstract way to trigger systemd-timesyncd
 #
 # @param ensure
-#   The state that the ``networkd`` service should be in
+#   The state that the `systemd-timesyncd` service should be in
 #
 # @param ntp_server
 #   A space-separated list of NTP servers, will be combined with interface specific
@@ -37,17 +37,10 @@ class systemd::timesyncd (
     } else {
       $_ntp_server = join($ntp_server, ' ')
     }
-    $setting = $facts['os']['family'] ? {
-      'Debian' => $facts['os']['release']['major'] ? {
-        '8'     => 'Servers',
-        default => 'NTP',
-      },
-      default  => 'NTP',
-    }
     ini_setting { 'ntp_server':
       ensure  => 'present',
       value   => $_ntp_server,
-      setting => $setting,
+      setting => 'NTP',
       section => 'Time',
       path    => '/etc/systemd/timesyncd.conf',
       notify  => Service['systemd-timesyncd'],

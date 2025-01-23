@@ -17,7 +17,10 @@ describe 'systemd' do
         it { is_expected.not_to create_service('systemd-resolved') }
         it { is_expected.not_to create_service('systemd-networkd') }
         it { is_expected.not_to create_service('systemd-timesyncd') }
+        it { is_expected.not_to contain_package('systemd-networkd') }
+        it { is_expected.not_to contain_package('systemd-timesyncd') }
         it { is_expected.not_to contain_package('systemd-resolved') }
+        it { is_expected.not_to contain_package('systemd-container') }
         it { is_expected.not_to contain_class('systemd::coredump') }
         it { is_expected.not_to contain_class('systemd::oomd') }
         it { is_expected.not_to contain_exec('systemctl set-default multi-user.target') }
@@ -38,8 +41,13 @@ describe 'systemd' do
           it { is_expected.to create_service('systemd-networkd').with_enable(true) }
           it { is_expected.not_to contain_file('/etc/systemd/network') }
 
-          case [facts[:os]['family'], facts[:os]['release']['major']]
-          when %w[RedHat 7], %w[RedHat 9]
+          if facts[:os]['family'] == 'RedHat'
+            it { is_expected.to contain_package('systemd-networkd') }
+          else
+            it { is_expected.not_to contain_package('systemd-networkd') }
+          end
+
+          if (facts[:os]['family'] == 'RedHat' && facts[:os]['release']['major'] != '8') || (facts[:os]['name'] == 'Debian' && facts[:os]['release']['major'] == '12')
             it { is_expected.to contain_package('systemd-resolved') }
           else
             it { is_expected.not_to contain_package('systemd-resolved') }
@@ -129,6 +137,36 @@ describe 'systemd' do
           it { is_expected.not_to contain_ini_setting('dns_stub_listener') }
         end
 
+        context 'when setting dns_stub_listener to absent' do
+          let(:params) do
+            {
+              manage_resolved: true,
+              dns: ['8.8.8.8', '8.8.4.4'],
+              fallback_dns: ['2001:4860:4860::8888', '2001:4860:4860::8844'],
+              dns_stub_listener: 'absent'
+            }
+          end
+
+          it { is_expected.to create_service('systemd-resolved').with_ensure('running') }
+          it { is_expected.to create_service('systemd-resolved').with_enable(true) }
+          it { is_expected.to contain_ini_setting('dns_stub_listener').with_ensure('absent') }
+        end
+
+        context 'when setting dns_stub_listener_extra to absent' do
+          let(:params) do
+            {
+              manage_resolved: true,
+              dns: ['8.8.8.8', '8.8.4.4'],
+              fallback_dns: ['2001:4860:4860::8888', '2001:4860:4860::8844'],
+              dns_stub_listener_extra: 'absent'
+            }
+          end
+
+          it { is_expected.to create_service('systemd-resolved').with_ensure('running') }
+          it { is_expected.to create_service('systemd-resolved').with_enable(true) }
+          it { is_expected.to contain_ini_setting('dns_stub_listener_extra').with_ensure('absent') }
+        end
+
         context 'when enabling resolved with DNS values (full)' do
           let(:params) do
             {
@@ -142,6 +180,7 @@ describe 'systemd' do
               dnsovertls: 'no',
               cache: true,
               dns_stub_listener: 'udp',
+              dns_stub_listener_extra: ['192.0.2.1', '2001:db8::1'],
             }
           end
 
@@ -162,7 +201,13 @@ describe 'systemd' do
             )
           }
 
-          it { is_expected.to contain_ini_setting('dns_stub_listener') }
+          it { is_expected.to contain_ini_setting('dns_stub_listener').with_ensure('present') }
+
+          it {
+            is_expected.to contain_ini_setting('dns_stub_listener_extra').
+              with_value(['192.0.2.1', '2001:db8::1']).
+              with_ensure('present')
+          }
         end
 
         context 'when enabling resolved with no-negative cache variant' do
@@ -180,6 +225,25 @@ describe 'systemd' do
             expect(subject).to contain_ini_setting('cache').with(
               path: '/etc/systemd/resolved.conf',
               value: 'no-negative'
+            )
+          }
+        end
+
+        context 'when enabling resolved with false cache variant' do
+          let(:params) do
+            {
+              manage_resolved: true,
+              cache: false,
+            }
+          end
+
+          it { is_expected.to create_service('systemd-resolved').with_ensure('running') }
+          it { is_expected.to create_service('systemd-resolved').with_enable(true) }
+
+          it {
+            expect(subject).to contain_ini_setting('cache').with(
+              path: '/etc/systemd/resolved.conf',
+              value: 'no'
             )
           }
         end
@@ -250,6 +314,28 @@ describe 'systemd' do
           }
         end
 
+        context 'when enabling nspawn' do
+          let(:params) do
+            {
+              manage_nspawn: true,
+            }
+          end
+
+          case facts[:os]['family']
+          when 'RedHat'
+            case facts[:os]['release']['major']
+            when '7'
+              it { is_expected.not_to contain_package('systemd-container') } # rubocop:disable RSpec/RepeatedExample
+            else
+              it { is_expected.to contain_package('systemd-container').with_ensure('present') } # rubocop:disable RSpec/RepeatedExample
+            end
+          when 'Debian'
+            it { is_expected.to contain_package('systemd-container').with_ensure('present') } # rubocop:disable RSpec/RepeatedExample
+          else
+            it { is_expected.not_to contain_package('systemd-container') } # rubocop:disable RSpec/RepeatedExample
+          end
+        end
+
         context 'when enabling timesyncd' do
           let(:params) do
             {
@@ -263,6 +349,12 @@ describe 'systemd' do
           it { is_expected.not_to create_service('systemd-resolved').with_enable(true) }
           it { is_expected.not_to create_service('systemd-networkd').with_ensure('running') }
           it { is_expected.not_to create_service('systemd-networkd').with_enable(true) }
+
+          if (facts[:os]['name'] == 'Ubuntu' && Puppet::Util::Package.versioncmp(facts[:os]['release']['full'], '20.04') >= 0) || (facts[:os]['name'] == 'Debian')
+            it { is_expected.to contain_package('systemd-timesyncd') }
+          else
+            it { is_expected.not_to contain_package('systemd-timesyncd') }
+          end
         end
 
         context 'when enabling timesyncd with NTP values (string)' do
@@ -293,11 +385,53 @@ describe 'systemd' do
           it { is_expected.to contain_ini_setting('fallback_ntp_server') }
         end
 
+        context 'when setting timezone' do
+          let(:params) do
+            {
+              timezone: 'America/Chicago',
+            }
+          end
+
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.to contain_exec('set system timezone').with_command('timedatectl set-timezone America/Chicago') }
+          it { is_expected.not_to contain_exec('set local hardware clock to local time') }
+          it { is_expected.not_to contain_exec('set local hardware clock to UTC time') }
+        end
+
+        context 'when setting rtc-local is true' do
+          let(:params) do
+            {
+              set_local_rtc: true
+            }
+          end
+
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.to contain_exec('set local hardware clock to local time') }
+          it { is_expected.not_to contain_exec('set local hardware clock to UTC time') }
+        end
+
+        context 'when setting rtc-local is false' do
+          let(:params) do
+            {
+              set_local_rtc: false
+            }
+          end
+
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.not_to contain_exec('set local hardware clock to local time') }
+          it { is_expected.to contain_exec('set local hardware clock to UTC time') }
+        end
+
         context 'when passing service limits' do
           let(:params) do
             {
               service_limits: { 'openstack-nova-compute.service' => { 'limits' => { 'LimitNOFILE' => 32_768 } } },
             }
+          end
+
+          # systemd::service_limits is deprecated
+          before do
+            Puppet.settings[:strict] = :warning
           end
 
           it { is_expected.to compile.with_all_deps }
@@ -374,7 +508,7 @@ describe 'systemd' do
             }
           end
 
-          it { is_expected.to contain_class('systemd::system') }
+          it { is_expected.to contain_class('systemd::service_manager') }
 
           case facts[:os]['family']
           when 'Archlinux', 'Gentoo'
@@ -385,9 +519,97 @@ describe 'systemd' do
             accounting = %w[DefaultCPUAccounting DefaultBlockIOAccounting DefaultMemoryAccounting DefaultTasksAccounting]
           end
           accounting.each do |account|
-            it { is_expected.to contain_ini_setting(account) }
+            it { is_expected.to contain_ini_setting("system/#{account}") }
           end
           it { is_expected.to compile.with_all_deps }
+
+          context 'when both manage_accounting and manage_system_conf are enabled' do
+            let :params do
+              super().merge(
+                manage_system_conf: true,
+                system_settings: {
+                  'DefaultTimeoutStartSec' => '120s',
+                  'DefaultCPUAccounting' => true,
+                  'DefaultMemoryAccounting' => { 'ensure' => 'absent' },
+                }
+              )
+            end
+
+            it { is_expected.to compile.with_all_deps }
+            it { is_expected.to contain_ini_setting('system/DefaultTimeoutStartSec').with_ensure('present').with_value('120s') }
+            # Value is overriden by accounting settings
+            it { is_expected.to contain_ini_setting('system/DefaultCPUAccounting').with_ensure('present').with_value('yes') }
+            # Ensure and value are overriden by accounting settings
+            it { is_expected.to contain_ini_setting('system/DefaultMemoryAccounting').with_ensure('present').with_value('yes') }
+            # Included by accounting (switch to DefaultIOAccounting after RHEL7 EOL)
+            it { is_expected.to contain_ini_setting('system/DefaultBlockIOAccounting').with_ensure('present').with_value('yes') }
+          end
+        end
+
+        context 'when managing system service manager config' do
+          let :params do
+            {
+              manage_system_conf: true,
+              system_settings: {
+                'DefaultTimeoutStartSec' => '120s',
+                'DefaultCPUAccounting' => true,
+                'DefaultMemoryAccounting' => { 'ensure' => 'absent' },
+              }
+            }
+          end
+
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.to have_ini_setting_resource_count(3) }
+          it { is_expected.to contain_ini_setting('system/DefaultMemoryAccounting').with_ensure('absent') }
+
+          it do
+            is_expected.to contain_ini_setting('system/DefaultTimeoutStartSec').with(
+              ensure: 'present',
+              path: '/etc/systemd/system.conf',
+              value: '120s'
+            )
+          end
+
+          it do
+            is_expected.to contain_ini_setting('system/DefaultCPUAccounting').with(
+              ensure: 'present',
+              path: '/etc/systemd/system.conf',
+              value: true
+            )
+          end
+        end
+
+        context 'when managing user service manager config' do
+          let :params do
+            {
+              manage_user_conf: true,
+              user_settings: {
+                'DefaultTimeoutStartSec' => '123s',
+                'DefaultLimitCORE' => 'infinity',
+                'DefaultLimitCPU' => { 'ensure' => 'absent' },
+              }
+            }
+          end
+
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.to have_ini_setting_resource_count(3) }
+          it { is_expected.to contain_ini_setting('user/DefaultLimitCPU').with_ensure('absent') }
+
+          it do
+            is_expected.to contain_ini_setting('user/DefaultTimeoutStartSec').with(
+              ensure: 'present',
+              path: '/etc/systemd/user.conf',
+              value: '123s'
+            )
+          end
+
+          it do
+            is_expected.to contain_ini_setting('user/DefaultLimitCORE').with(
+              ensure: 'present',
+              path: '/etc/systemd/user.conf',
+              value: 'infinity'
+            )
+          end
         end
 
         context 'when enabling journald with options' do
@@ -453,6 +675,101 @@ describe 'systemd' do
           it { is_expected.not_to contain_service('systemd-journald') }
         end
 
+        context 'when journal-upload and journal-remote is enabled' do
+          let(:params) do
+            {
+              manage_journal_upload: true,
+              journal_upload_settings: {
+                'URL' => 'https://central.server:19532',
+                'ServerKeyFile' => '/tmp/key-upload.pem',
+                'ServerCertificateFile' => {
+                  'ensure' => 'absent',
+                },
+                'TrustedCertificateFile' => '/tmp/cert-upload.pem',
+              },
+              manage_journal_remote: true,
+              journal_remote_settings: {
+                'SplitMode' => 'host',
+                'ServerKeyFile' => '/tmp/key-remote.pem',
+                'ServerCertificateFile' => '/tmp/cert-remote.pem',
+                'TrustedCertificateFile' => {
+                  'ensure' => 'absent',
+                },
+              },
+            }
+          end
+
+          it { is_expected.to compile.with_all_deps }
+
+          it {
+            is_expected.to contain_service('systemd-journal-upload').with(
+              ensure: 'running',
+              enable: true
+            )
+          }
+
+          it {
+            is_expected.to contain_service('systemd-journal-remote').with(
+              ensure: 'running'
+            )
+          }
+
+          it { is_expected.to have_ini_setting_resource_count(8) }
+
+          it {
+            expect(subject).to contain_ini_setting('journal-upload_TrustedCertificateFile').with(
+              path: '/etc/systemd/journal-upload.conf',
+              section: 'Upload',
+              setting: 'TrustedCertificateFile',
+              notify: 'Service[systemd-journal-upload]',
+              value: '/tmp/cert-upload.pem'
+            )
+          }
+
+          it {
+            expect(subject).to contain_ini_setting('journal-remote_TrustedCertificateFile').with(
+              path: '/etc/systemd/journal-remote.conf',
+              section: 'Remote',
+              setting: 'TrustedCertificateFile',
+              notify: 'Service[systemd-journal-remote]',
+              ensure: 'absent'
+            )
+          }
+
+          it {
+            expect(subject).to contain_ini_setting('journal-upload_ServerCertificateFile').with(
+              path: '/etc/systemd/journal-upload.conf',
+              section: 'Upload',
+              setting: 'ServerCertificateFile',
+              notify: 'Service[systemd-journal-upload]',
+              ensure: 'absent'
+            )
+          }
+
+          it {
+            expect(subject).to contain_ini_setting('journal-remote_ServerCertificateFile').with(
+              path: '/etc/systemd/journal-remote.conf',
+              section: 'Remote',
+              setting: 'ServerCertificateFile',
+              notify: 'Service[systemd-journal-remote]',
+              value: '/tmp/cert-remote.pem'
+            )
+          }
+        end
+
+        context 'when journal-upload/journal-remote is not enabled' do
+          let(:params) do
+            {
+              manage_journal_upload: false,
+              manage_journal_remote: false,
+            }
+          end
+
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.not_to contain_service('systemd-journal-upload') }
+          it { is_expected.not_to contain_service('systemd-journal-remote') }
+        end
+
         context 'when disabling udevd management' do
           let(:params) do
             {
@@ -463,6 +780,7 @@ describe 'systemd' do
           it { is_expected.to compile.with_all_deps }
           it { is_expected.not_to contain_service('systemd-udevd') }
           it { is_expected.not_to contain_file('/etc/udev/udev.conf') }
+          it { is_expected.not_to contain_file('/etc/udev/rules.d') }
         end
 
         context 'when working with udevd and no custom rules' do
@@ -499,12 +817,15 @@ describe 'systemd' do
               with_content(%r{^resolve_names=early$}).
               with_content(%r{^timeout_signal=SIGKILL$})
           }
+
+          it { is_expected.to contain_file('/etc/udev/rules.d').with_ensure('directory').with_purge(false) }
         end
 
         context 'when working with udevd and a rule set' do
           let(:params) do
             {
               manage_udevd: true,
+              udev_reload: true,
               udev_log: 'daemon',
               udev_children_max: 1,
               udev_exec_delay: 2,
@@ -520,6 +841,19 @@ describe 'systemd' do
               } },
 
             }
+          end
+
+          context 'when enabling udevd management and rule purging' do
+            let(:params) do
+              {
+                manage_udevd: true,
+                udev_purge_rules: true,
+                udev_reload: true,
+              }
+            end
+
+            it { is_expected.to compile.with_all_deps }
+            it { is_expected.to contain_file('/etc/udev/rules.d').with_ensure('directory').with_purge(true) }
           end
 
           it { is_expected.to compile.with_all_deps }
@@ -552,6 +886,9 @@ describe 'systemd' do
                      'ACTION=="add", KERNEL=="sdb", RUN+="/bin/raw /dev/raw/raw2 %N"',
                    ])
           }
+
+          it { is_expected.to contain_exec('systemd-udev_reload') }
+          it { is_expected.to contain_file('/etc/udev/rules.d/example_raw.rules').that_notifies('Exec[systemd-udev_reload]') }
         end
 
         context 'with machine-info' do
@@ -659,11 +996,62 @@ describe 'systemd' do
           it { is_expected.to contain_systemd__dropin_file('my-foo.conf').with_content('[Service]\nReadWritePaths=/') }
         end
 
+        context 'when passing manage_units' do
+          let(:params) do
+            {
+              manage_units: {
+                'special.service' => {
+                  'ensure' => 'present',
+                  'unit_entry' => { 'Description' => 'My Special Unit' },
+                  'service_entry' => { 'TimeoutStartSec' => '100h' },
+                },
+              },
+            }
+          end
+
+          it {
+            is_expected.to contain_systemd__manage_unit('special.service').
+              with_ensure('present').
+              with_unit_entry({ 'Description' => 'My Special Unit' }).
+              with_service_entry({ 'TimeoutStartSec' => '100h' })
+          }
+        end
+
+        context 'when passing manage_dropins' do
+          let(:params) do
+            {
+              manage_dropins: {
+                'foo.conf' => {
+                  'unit' => 'special.slice',
+                  'slice_entry' => { 'CPUQuota' => '999%' },
+                },
+                'bar.conf' => {
+                  'unit' => 'special.timer',
+                  'timer_entry' => { 'OnCalendar' => ['', 'Daily'] },
+                },
+
+              },
+            }
+          end
+
+          it {
+            is_expected.to contain_systemd__manage_dropin('foo.conf').
+              with_unit('special.slice').
+              with_slice_entry({ 'CPUQuota' => '999%' })
+          }
+
+          it {
+            is_expected.to contain_systemd__manage_dropin('bar.conf').
+              with_unit('special.timer').
+              with_timer_entry({ 'OnCalendar' => ['', 'Daily'] })
+          }
+        end
+
         context 'with managed networkd directory' do
           let :params do
             {
               manage_networkd: true,
-              manage_all_network_files: true
+              manage_all_network_files: true,
             }
           end
 

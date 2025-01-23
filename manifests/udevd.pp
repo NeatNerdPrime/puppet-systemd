@@ -9,6 +9,12 @@ class systemd::udevd {
     enable => true,
   }
 
+  file { '/etc/udev/rules.d':
+    ensure  => directory,
+    purge   => $systemd::udev_purge_rules,
+    recurse => true,
+  }
+
   file { '/etc/udev/udev.conf':
     ensure  => 'file',
     owner   => 'root',
@@ -29,5 +35,11 @@ class systemd::udevd {
     systemd::udev::rule { $udev_rule_name:
       * => $udev_rule,
     }
+  }
+
+  exec { 'systemd-udev_reload':
+    command     => 'udevadm control --reload-rules && udevadm trigger',
+    refreshonly => true,
+    path        => $facts['path'],
   }
 }

@@ -4,8 +4,8 @@
 #
 # @see systemd.unit(5)
 #
-# @param unit the The target unit file to create, the value will be set to the `filename` parameter as well
-# @param filename The target unit file to create
+# @param unit The target unit file to create
+# @param filename The filename of the drop in. The full path is determined using the path, unit and this filename.
 # @param ensure the state of this dropin file
 # @param path The main systemd configuration path
 # @param selinux_ignore_defaults If Puppet should ignore the default SELinux labels.
@@ -32,7 +32,7 @@ define systemd::dropin_file (
   String                                      $group                   = 'root',
   String                                      $mode                    = '0444',
   Boolean                                     $show_diff               = true,
-  Boolean                                     $notify_service          = false,
+  Boolean                                     $notify_service          = true,
   Boolean                                     $daemon_reload           = true,
 ) {
   include systemd
@@ -81,7 +81,7 @@ define systemd::dropin_file (
     File[$full_filename] ~> Service <| title == $unit or name == $unit |>
 
     if $daemon_reload {
-      Systemd::Daemon_reload[$unit] ~> Service <| title == $unit or name == $unit |>
+      Systemd::Daemon_reload[$unit] -> Service <| title == $unit or name == $unit |>
     }
 
     if $unit =~ /\.service$/ {
@@ -89,7 +89,7 @@ define systemd::dropin_file (
       File[$full_filename] ~> Service <| title == $short_service_name or name == $short_service_name |>
 
       if $daemon_reload {
-        Systemd::Daemon_reload[$unit] ~> Service <| title == $short_service_name or name == $short_service_name |>
+        Systemd::Daemon_reload[$unit] -> Service <| title == $short_service_name or name == $short_service_name |>
       }
     }
   }

@@ -4,6 +4,367 @@ All notable changes to this project will be documented in this file.
 Each new release typically also includes the latest modulesync defaults.
 These should not affect the functionality of the module.
 
+## [v8.1.0](https://github.com/voxpupuli/puppet-systemd/tree/v8.1.0) (2025-01-08)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-systemd/compare/v8.0.0...v8.1.0)
+
+**Implemented enhancements:**
+
+- Add a few more missing service options [\#508](https://github.com/voxpupuli/puppet-systemd/pull/508) ([jcpunk](https://github.com/jcpunk))
+- Add Missing Condition Units which were added in version244 [\#507](https://github.com/voxpupuli/puppet-systemd/pull/507) ([C24-AK](https://github.com/C24-AK))
+
+**Closed issues:**
+
+- option not to remove existing dropin files. [\#504](https://github.com/voxpupuli/puppet-systemd/issues/504)
+- \[4.1.0\] ignore active+enable when ensure is set to absent for systemd::timer [\#454](https://github.com/voxpupuli/puppet-systemd/issues/454)
+
+## [v8.0.0](https://github.com/voxpupuli/puppet-systemd/tree/v8.0.0) (2024-12-13)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-systemd/compare/v7.1.0...v8.0.0)
+
+**Breaking changes:**
+
+- Drop support for RHEL 7, CentOS 7/8, Fedora 38/39, VirtuozzoLinux 7 [\#496](https://github.com/voxpupuli/puppet-systemd/pull/496) ([jay7x](https://github.com/jay7x))
+- Replace deprecated `shell_escape` function with `stdlib::shell_escape` [\#480](https://github.com/voxpupuli/puppet-systemd/pull/480) ([jormaster3k](https://github.com/jormaster3k))
+
+**Implemented enhancements:**
+
+- Support management of Swap unit files [\#502](https://github.com/voxpupuli/puppet-systemd/pull/502) ([traylenator](https://github.com/traylenator))
+- \[Systemd::Unit::Service\] add support for LogRateLimit\* options [\#500](https://github.com/voxpupuli/puppet-systemd/pull/500) ([veshij](https://github.com/veshij))
+- Add Ubuntu 24.04 and Fedora 40 support [\#498](https://github.com/voxpupuli/puppet-systemd/pull/498) ([jay7x](https://github.com/jay7x))
+- Manage {system,user}.conf values [\#495](https://github.com/voxpupuli/puppet-systemd/pull/495) ([jay7x](https://github.com/jay7x))
+- Support Mount units for manage\_unit or dropin types [\#490](https://github.com/voxpupuli/puppet-systemd/pull/490) ([traylenator](https://github.com/traylenator))
+- Reload udev rules after change [\#485](https://github.com/voxpupuli/puppet-systemd/pull/485) ([deric](https://github.com/deric))
+- add support for journal upload and remote server [\#482](https://github.com/voxpupuli/puppet-systemd/pull/482) ([trefzer](https://github.com/trefzer))
+- allow service time settings to accept Integer values [\#475](https://github.com/voxpupuli/puppet-systemd/pull/475) ([vchepkov](https://github.com/vchepkov))
+- Allow `MemorySwapMax` be specified as a percentage [\#472](https://github.com/voxpupuli/puppet-systemd/pull/472) ([traylenator](https://github.com/traylenator))
+- Rework Red Hat resolved package list to be more future proof [\#468](https://github.com/voxpupuli/puppet-systemd/pull/468) ([jcpunk](https://github.com/jcpunk))
+
+**Merged pull requests:**
+
+- Correct UMask in mkswap example [\#503](https://github.com/voxpupuli/puppet-systemd/pull/503) ([traylenator](https://github.com/traylenator))
+- README: fix path in example [\#489](https://github.com/voxpupuli/puppet-systemd/pull/489) ([kenyon](https://github.com/kenyon))
+- Update readme to reflect changes in \#485 [\#487](https://github.com/voxpupuli/puppet-systemd/pull/487) ([deric](https://github.com/deric))
+- README.md: correct service limits example [\#476](https://github.com/voxpupuli/puppet-systemd/pull/476) ([kenyon](https://github.com/kenyon))
+
+## [v7.1.0](https://github.com/voxpupuli/puppet-systemd/tree/v7.1.0) (2024-06-03)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-systemd/compare/v7.0.0...v7.1.0)
+
+**Implemented enhancements:**
+
+- add MemoryDenyWriteExecute to Systemd::Unit::Service type [\#465](https://github.com/voxpupuli/puppet-systemd/pull/465) ([TheMeier](https://github.com/TheMeier))
+- Allow setting a specific package name for systemd-oomd [\#464](https://github.com/voxpupuli/puppet-systemd/pull/464) ([jcpunk](https://github.com/jcpunk))
+- Add support for timezone and hardware clock [\#462](https://github.com/voxpupuli/puppet-systemd/pull/462) ([jcpunk](https://github.com/jcpunk))
+- fix typo in service\_limits deprecation message [\#460](https://github.com/voxpupuli/puppet-systemd/pull/460) ([saz](https://github.com/saz))
+- fix: refresh service only based on drop-in file changes [\#406](https://github.com/voxpupuli/puppet-systemd/pull/406) ([shieldwed](https://github.com/shieldwed))
+
+**Closed issues:**
+
+- Deprecation of systemd::service\_limits unexpectedly causes service restarts in some scenarios [\#463](https://github.com/voxpupuli/puppet-systemd/issues/463)
+
+**Merged pull requests:**
+
+- Update README to reflect `service_limits` is deprecated [\#461](https://github.com/voxpupuli/puppet-systemd/pull/461) ([ekohl](https://github.com/ekohl))
+
+## [v7.0.0](https://github.com/voxpupuli/puppet-systemd/tree/v7.0.0) (2024-04-26)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-systemd/compare/v6.6.0...v7.0.0)
+
+**Breaking changes:**
+
+- remove `systemd::escape` usage for `timer_wrapper` [\#452](https://github.com/voxpupuli/puppet-systemd/pull/452) ([TheMeier](https://github.com/TheMeier))
+- Drop EoL Debian 10 support [\#448](https://github.com/voxpupuli/puppet-systemd/pull/448) ([bastelfreak](https://github.com/bastelfreak))
+- Use Stdlib::CreateResources type for hiera expansions [\#438](https://github.com/voxpupuli/puppet-systemd/pull/438) ([traylenator](https://github.com/traylenator))
+- Deprecate `systemd::service_limits` [\#437](https://github.com/voxpupuli/puppet-systemd/pull/437) ([traylenator](https://github.com/traylenator))
+- Don't allow ensure=file anymore for systemd::unit\_file [\#434](https://github.com/voxpupuli/puppet-systemd/pull/434) ([baurmatt](https://github.com/baurmatt))
+
+**Implemented enhancements:**
+
+- Add `NetworkNamespacePath` to unit service [\#440](https://github.com/voxpupuli/puppet-systemd/issues/440)
+- Add hiera-friendly option to manage dropins [\#435](https://github.com/voxpupuli/puppet-systemd/issues/435)
+- Manage units running under `systemd --user` instance [\#446](https://github.com/voxpupuli/puppet-systemd/pull/446) ([traylenator](https://github.com/traylenator))
+- New parameters to manage systemd-nspawn [\#444](https://github.com/voxpupuli/puppet-systemd/pull/444) ([traylenator](https://github.com/traylenator))
+- Support reload of instances of systemd --user [\#443](https://github.com/voxpupuli/puppet-systemd/pull/443) ([traylenator](https://github.com/traylenator))
+- Add NetworkNamespacePath as a valid unit service configuration [\#441](https://github.com/voxpupuli/puppet-systemd/pull/441) ([Valantin](https://github.com/Valantin))
+- Create manage\_unit, manage\_dropin types from hiera [\#436](https://github.com/voxpupuli/puppet-systemd/pull/436) ([traylenator](https://github.com/traylenator))
+- Make service restart upon unit file change optional [\#433](https://github.com/voxpupuli/puppet-systemd/pull/433) ([schustersv](https://github.com/schustersv))
+- remove resolved settings from config when changed to `absent` [\#429](https://github.com/voxpupuli/puppet-systemd/pull/429) ([TheMeier](https://github.com/TheMeier))
+- Add parameter to manage /etc/udev/rules.d directory [\#428](https://github.com/voxpupuli/puppet-systemd/pull/428) ([TheMeier](https://github.com/TheMeier))
+- `systemd::unit_file`: Ensure link gets removed on `ensure => absent` [\#405](https://github.com/voxpupuli/puppet-systemd/pull/405) ([baurmatt](https://github.com/baurmatt))
+
+**Fixed bugs:**
+
+- IODeviceWeight, IOReadIOPSMax, .. do not work in systemd::manage\_unit or systemd::dropin\_file [\#424](https://github.com/voxpupuli/puppet-systemd/issues/424)
+- Correctly interpolate variables in `service_limits` [\#449](https://github.com/voxpupuli/puppet-systemd/pull/449) ([ekohl](https://github.com/ekohl))
+- Correct typing for IOReadIOPSMax, IOWriteIOPSMax,... in systemd::manage\_dropin [\#430](https://github.com/voxpupuli/puppet-systemd/pull/430) ([traylenator](https://github.com/traylenator))
+
+**Closed issues:**
+
+- Service not enabled on systemd::timer [\#391](https://github.com/voxpupuli/puppet-systemd/issues/391)
+- create systemd::path [\#370](https://github.com/voxpupuli/puppet-systemd/issues/370)
+- create services/timers for users [\#328](https://github.com/voxpupuli/puppet-systemd/issues/328)
+
+**Merged pull requests:**
+
+- Fix typo [\#455](https://github.com/voxpupuli/puppet-systemd/pull/455) ([deric](https://github.com/deric))
+- Add test case for interpolation bug in name of used types [\#450](https://github.com/voxpupuli/puppet-systemd/pull/450) ([traylenator](https://github.com/traylenator))
+- `init`: `service_limits` param: don't refer to `create_resources` [\#439](https://github.com/voxpupuli/puppet-systemd/pull/439) ([kenyon](https://github.com/kenyon))
+
+## [v6.6.0](https://github.com/voxpupuli/puppet-systemd/tree/v6.6.0) (2024-03-08)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-systemd/compare/v6.5.0...v6.6.0)
+
+**Implemented enhancements:**
+
+- Add bolt task to return unit state in a more parsable way [\#426](https://github.com/voxpupuli/puppet-systemd/pull/426) ([rwaffen](https://github.com/rwaffen))
+
+## [v6.5.0](https://github.com/voxpupuli/puppet-systemd/tree/v6.5.0) (2024-03-06)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-systemd/compare/v6.4.0...v6.5.0)
+
+**Implemented enhancements:**
+
+- Add possibility to setup limits for user sessions [\#417](https://github.com/voxpupuli/puppet-systemd/issues/417)
+- add a cron-like systemd::timer interface [\#374](https://github.com/voxpupuli/puppet-systemd/issues/374)
+- Use Systemd::Unit::Amount, Percent and AmountOrPercent [\#422](https://github.com/voxpupuli/puppet-systemd/pull/422) ([traylenator](https://github.com/traylenator))
+- Support `[Slice]` in manage\_unit and manage\_dropin [\#420](https://github.com/voxpupuli/puppet-systemd/pull/420) ([traylenator](https://github.com/traylenator))
+- feat: add a cron like wrapper for timers [\#419](https://github.com/voxpupuli/puppet-systemd/pull/419) ([TheMeier](https://github.com/TheMeier))
+
+**Fixed bugs:**
+
+- Allow CPUQuota to be greater than 100% [\#423](https://github.com/voxpupuli/puppet-systemd/pull/423) ([traylenator](https://github.com/traylenator))
+
+**Merged pull requests:**
+
+- Rename daemon\_reload.rb to daemon\_reload\_spec.rb [\#418](https://github.com/voxpupuli/puppet-systemd/pull/418) ([TheMeier](https://github.com/TheMeier))
+- manage\_unit: correct minor mistakes in examples [\#415](https://github.com/voxpupuli/puppet-systemd/pull/415) ([zbentley](https://github.com/zbentley))
+
+## [v6.4.0](https://github.com/voxpupuli/puppet-systemd/tree/v6.4.0) (2024-02-26)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-systemd/compare/v6.3.0...v6.4.0)
+
+**Implemented enhancements:**
+
+- Support `StartLimitIntervalSec` and  `StartLimitBurst` [\#412](https://github.com/voxpupuli/puppet-systemd/pull/412) ([traylenator](https://github.com/traylenator))
+- unit type: add `ConditionPathIsMountPoint` [\#408](https://github.com/voxpupuli/puppet-systemd/pull/408) ([fragfutter](https://github.com/fragfutter))
+- Allow percent \(%\) character in unit names. [\#401](https://github.com/voxpupuli/puppet-systemd/pull/401) ([traylenator](https://github.com/traylenator))
+
+**Fixed bugs:**
+
+- Support multiple Environment Settings [\#409](https://github.com/voxpupuli/puppet-systemd/pull/409) ([traylenator](https://github.com/traylenator))
+- Deleting duplicate Key entries in types/unit/service.pp [\#407](https://github.com/voxpupuli/puppet-systemd/pull/407) ([C24-AK](https://github.com/C24-AK))
+- systemd::cache = false result was vague. [\#403](https://github.com/voxpupuli/puppet-systemd/pull/403) ([traylenator](https://github.com/traylenator))
+
+## [v6.3.0](https://github.com/voxpupuli/puppet-systemd/tree/v6.3.0) (2023-12-06)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-systemd/compare/v6.2.0...v6.3.0)
+
+**Implemented enhancements:**
+
+- Add some missing `Unit` options [\#396](https://github.com/voxpupuli/puppet-systemd/pull/396) ([gcoxmoz](https://github.com/gcoxmoz))
+
+**Fixed bugs:**
+
+- Invalid option `MaxFree` in `cordedump.conf` [\#398](https://github.com/voxpupuli/puppet-systemd/issues/398)
+- Correct coredump parameter from `MaxFree` to `KeepFree` [\#399](https://github.com/voxpupuli/puppet-systemd/pull/399) ([traylenator](https://github.com/traylenator))
+
+## [v6.2.0](https://github.com/voxpupuli/puppet-systemd/tree/v6.2.0) (2023-11-21)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-systemd/compare/v6.1.0...v6.2.0)
+
+**Implemented enhancements:**
+
+- Add `UMask` to `Systemd::Unit::Service` [\#393](https://github.com/voxpupuli/puppet-systemd/pull/393) ([griggi-ws](https://github.com/griggi-ws))
+- Add `StateDirectory` to `Systemd::Unit::Service` [\#392](https://github.com/voxpupuli/puppet-systemd/pull/392) ([henrixh](https://github.com/henrixh))
+
+## [v6.1.0](https://github.com/voxpupuli/puppet-systemd/tree/v6.1.0) (2023-10-30)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-systemd/compare/v6.0.0...v6.1.0)
+
+**Implemented enhancements:**
+
+- Add Debian 12 support [\#386](https://github.com/voxpupuli/puppet-systemd/pull/386) ([bastelfreak](https://github.com/bastelfreak))
+- Add OracleLinux 9 support [\#385](https://github.com/voxpupuli/puppet-systemd/pull/385) ([bastelfreak](https://github.com/bastelfreak))
+- Install systemd-networkd package, if any [\#380](https://github.com/voxpupuli/puppet-systemd/pull/380) ([ekohl](https://github.com/ekohl))
+- Add more security related parameters to service [\#379](https://github.com/voxpupuli/puppet-systemd/pull/379) ([lkck24](https://github.com/lkck24))
+- only accept socket\_entry for socket units [\#376](https://github.com/voxpupuli/puppet-systemd/pull/376) ([evgeni](https://github.com/evgeni))
+- Implement DNSStubListenerExtra for resolved.conf [\#371](https://github.com/voxpupuli/puppet-systemd/pull/371) ([ekohl](https://github.com/ekohl))
+- Support Debian 12 [\#357](https://github.com/voxpupuli/puppet-systemd/pull/357) ([traylenator](https://github.com/traylenator))
+
+**Merged pull requests:**
+
+- Drop OracleLinux 7 from metadata.json [\#384](https://github.com/voxpupuli/puppet-systemd/pull/384) ([bastelfreak](https://github.com/bastelfreak))
+
+## [v6.0.0](https://github.com/voxpupuli/puppet-systemd/tree/v6.0.0) (2023-09-04)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-systemd/compare/v5.2.0...v6.0.0)
+
+**Breaking changes:**
+
+- Drop Ubuntu 18.04 which went out of standard support in May 2023 [\#365](https://github.com/voxpupuli/puppet-systemd/pull/365) ([simondeziel](https://github.com/simondeziel))
+
+**Implemented enhancements:**
+
+- Add ability to manage StopIdleSessionSec in logind.conf [\#369](https://github.com/voxpupuli/puppet-systemd/pull/369) ([jasonknudsen](https://github.com/jasonknudsen))
+- add PrivateTmp and RuntimeDirectory [\#368](https://github.com/voxpupuli/puppet-systemd/pull/368) ([oOHenry](https://github.com/oOHenry))
+- add ability to set limits with the systemd::manage\_unit resource [\#367](https://github.com/voxpupuli/puppet-systemd/pull/367) ([oOHenry](https://github.com/oOHenry))
+- Remove support for Fedora 36 and add support for Fedora 38 [\#366](https://github.com/voxpupuli/puppet-systemd/pull/366) ([simondeziel](https://github.com/simondeziel))
+- Add Puppet 8 support [\#359](https://github.com/voxpupuli/puppet-systemd/pull/359) ([bastelfreak](https://github.com/bastelfreak))
+
+**Fixed bugs:**
+
+- fix socket service example syntax [\#375](https://github.com/voxpupuli/puppet-systemd/pull/375) ([evgeni](https://github.com/evgeni))
+
+## [v5.2.0](https://github.com/voxpupuli/puppet-systemd/tree/v5.2.0) (2023-07-13)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-systemd/compare/v5.1.0...v5.2.0)
+
+**Implemented enhancements:**
+
+- Missing WorkingDirectory parameter on Systemd::Unit::Service [\#320](https://github.com/voxpupuli/puppet-systemd/issues/320)
+- Nice, IOSchedulingPriority and IOSchedulingClass [\#363](https://github.com/voxpupuli/puppet-systemd/pull/363) ([traylenator](https://github.com/traylenator))
+- allow to set StandardInput on service unit [\#362](https://github.com/voxpupuli/puppet-systemd/pull/362) ([oOHenry](https://github.com/oOHenry))
+- Allow SupplementaryGroups and DynamicUser [\#358](https://github.com/voxpupuli/puppet-systemd/pull/358) ([traylenator](https://github.com/traylenator))
+- Allow LogLevelMax to be set in \[Service\] [\#356](https://github.com/voxpupuli/puppet-systemd/pull/356) ([traylenator](https://github.com/traylenator))
+
+**Fixed bugs:**
+
+- Correct syntax in manage\_unit socket example [\#354](https://github.com/voxpupuli/puppet-systemd/pull/354) ([ekohl](https://github.com/ekohl))
+
+## [v5.1.0](https://github.com/voxpupuli/puppet-systemd/tree/v5.1.0) (2023-06-15)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-systemd/compare/v5.0.0...v5.1.0)
+
+**Implemented enhancements:**
+
+- Support StandardOutput, StandardError and RequiresMountsFor. [\#353](https://github.com/voxpupuli/puppet-systemd/pull/353) ([traylenator](https://github.com/traylenator))
+- Allow WorkingDirectory to be specified in \[Service\] [\#352](https://github.com/voxpupuli/puppet-systemd/pull/352) ([traylenator](https://github.com/traylenator))
+- Socket support for manage unit and dropin [\#350](https://github.com/voxpupuli/puppet-systemd/pull/350) ([traylenator](https://github.com/traylenator))
+- Allow puppetlabs-stdlib 9.x [\#349](https://github.com/voxpupuli/puppet-systemd/pull/349) ([smortex](https://github.com/smortex))
+- No insistence on unit\_entry ever or service\_entry with absent manage\_unit [\#345](https://github.com/voxpupuli/puppet-systemd/pull/345) ([traylenator](https://github.com/traylenator))
+- Add comment in manage\_unit deployed files [\#333](https://github.com/voxpupuli/puppet-systemd/pull/333) ([traylenator](https://github.com/traylenator))
+
+**Closed issues:**
+
+- Feature Request for socket unit files [\#348](https://github.com/voxpupuli/puppet-systemd/issues/348)
+- Module require an old version of puppetlabs-inifile [\#343](https://github.com/voxpupuli/puppet-systemd/issues/343)
+
+## [v5.0.0](https://github.com/voxpupuli/puppet-systemd/tree/v5.0.0) (2023-06-01)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-systemd/compare/v4.2.0...v5.0.0)
+
+**Breaking changes:**
+
+- Drop Puppet 6 support [\#342](https://github.com/voxpupuli/puppet-systemd/pull/342) ([bastelfreak](https://github.com/bastelfreak))
+
+**Implemented enhancements:**
+
+- Refactor unit template [\#344](https://github.com/voxpupuli/puppet-systemd/pull/344) ([traylenator](https://github.com/traylenator))
+- Allow LimitCORE in \[Service\] for manage\_unit/dropin [\#341](https://github.com/voxpupuli/puppet-systemd/pull/341) ([traylenator](https://github.com/traylenator))
+- Allow SyslogIdentifier, KillMode and KillSignal to \[service\] section [\#339](https://github.com/voxpupuli/puppet-systemd/pull/339) ([traylenator](https://github.com/traylenator))
+- Addition of path directives to manage\_unit/dropin [\#337](https://github.com/voxpupuli/puppet-systemd/pull/337) ([traylenator](https://github.com/traylenator))
+- Addition of timer directives to manage\_unit and manage\_dropin [\#335](https://github.com/voxpupuli/puppet-systemd/pull/335) ([traylenator](https://github.com/traylenator))
+- Allow DefaultDependencies to be set in \[Unit\] section [\#334](https://github.com/voxpupuli/puppet-systemd/pull/334) ([traylenator](https://github.com/traylenator))
+
+**Closed issues:**
+
+- Increase inifile version in metadata to \< 7.0.0 [\#336](https://github.com/voxpupuli/puppet-systemd/issues/336)
+
+**Merged pull requests:**
+
+- Increase inifile dependency upper version to \< 7.0.0 [\#338](https://github.com/voxpupuli/puppet-systemd/pull/338) ([canihavethisone](https://github.com/canihavethisone))
+- Group spec expectations in a single example [\#331](https://github.com/voxpupuli/puppet-systemd/pull/331) ([ekohl](https://github.com/ekohl))
+
+## [v4.2.0](https://github.com/voxpupuli/puppet-systemd/tree/v4.2.0) (2023-04-18)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-systemd/compare/v4.1.0...v4.2.0)
+
+**Implemented enhancements:**
+
+- Add AmbientCapabilities to Systemd::Unit::Service [\#329](https://github.com/voxpupuli/puppet-systemd/pull/329) ([ekohl](https://github.com/ekohl))
+
+**Merged pull requests:**
+
+- Stick to the Puppet language style guide in examples [\#327](https://github.com/voxpupuli/puppet-systemd/pull/327) ([smortex](https://github.com/smortex))
+- Fix `manage_unit` example in README.md [\#326](https://github.com/voxpupuli/puppet-systemd/pull/326) ([Enucatl](https://github.com/Enucatl))
+
+## [v4.1.0](https://github.com/voxpupuli/puppet-systemd/tree/v4.1.0) (2023-03-31)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-systemd/compare/v4.0.1...v4.1.0)
+
+**Implemented enhancements:**
+
+- Expand managed unit entry with User, Group + EnvironmentFile Array [\#323](https://github.com/voxpupuli/puppet-systemd/pull/323) ([ekohl](https://github.com/ekohl))
+- Add timer\_entry to manage\_{dropin,unit} [\#322](https://github.com/voxpupuli/puppet-systemd/pull/322) ([ekohl](https://github.com/ekohl))
+- add support for {AlmaLinux,Rocky} {8,9} [\#319](https://github.com/voxpupuli/puppet-systemd/pull/319) ([jhoblitt](https://github.com/jhoblitt))
+
+**Fixed bugs:**
+
+- Systemd::Unit::Service: missing User and Group [\#299](https://github.com/voxpupuli/puppet-systemd/issues/299)
+
+## [v4.0.1](https://github.com/voxpupuli/puppet-systemd/tree/v4.0.1) (2023-01-31)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-systemd/compare/v4.0.0...v4.0.1)
+
+**Fixed bugs:**
+
+- Revert udevadm and udev facts from \#292 [\#316](https://github.com/voxpupuli/puppet-systemd/pull/316) ([jhoblitt](https://github.com/jhoblitt))
+- systemd::timer: fix before's argument to use the proper syntax [\#315](https://github.com/voxpupuli/puppet-systemd/pull/315) ([simondeziel](https://github.com/simondeziel))
+
+## [v4.0.0](https://github.com/voxpupuli/puppet-systemd/tree/v4.0.0) (2023-01-27)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-systemd/compare/v3.10.0...v4.0.0)
+
+**Breaking changes:**
+
+- drop support for fedora 30 & 31 \(EOL\) [\#310](https://github.com/voxpupuli/puppet-systemd/pull/310) ([jhoblitt](https://github.com/jhoblitt))
+- drop support for ubuntu 16.04 \(EOL\) [\#308](https://github.com/voxpupuli/puppet-systemd/pull/308) ([jhoblitt](https://github.com/jhoblitt))
+- drop debian 9 support \(EOL\) [\#307](https://github.com/voxpupuli/puppet-systemd/pull/307) ([jhoblitt](https://github.com/jhoblitt))
+- Remove debian 8 support [\#305](https://github.com/voxpupuli/puppet-systemd/pull/305) ([traylenator](https://github.com/traylenator))
+- systemd::unit\_file: remove hasrestart/hasstatus params [\#264](https://github.com/voxpupuli/puppet-systemd/pull/264) ([bastelfreak](https://github.com/bastelfreak))
+- Remove restart\_service on service\_limits define [\#193](https://github.com/voxpupuli/puppet-systemd/pull/193) ([ekohl](https://github.com/ekohl))
+
+**Implemented enhancements:**
+
+- Revisit setting daemon-reload to true by default [\#284](https://github.com/voxpupuli/puppet-systemd/issues/284)
+- The module should have the ability to reload services that have outdated unit dropin files [\#282](https://github.com/voxpupuli/puppet-systemd/issues/282)
+- Add restart\_service parameter on service\_limits for compatibility [\#313](https://github.com/voxpupuli/puppet-systemd/pull/313) ([ekohl](https://github.com/ekohl))
+- add support for fedora 36 & 37 [\#309](https://github.com/voxpupuli/puppet-systemd/pull/309) ([jhoblitt](https://github.com/jhoblitt))
+- Allow MemorySwapMax to be specified as service limit [\#304](https://github.com/voxpupuli/puppet-systemd/pull/304) ([traylenator](https://github.com/traylenator))
+- add udevadm & udev facts [\#292](https://github.com/voxpupuli/puppet-systemd/pull/292) ([jhoblitt](https://github.com/jhoblitt))
+- Make Systemd::Unit type stricter [\#290](https://github.com/voxpupuli/puppet-systemd/pull/290) ([traylenator](https://github.com/traylenator))
+- New systemd::manage\_unit, systemd::manage\_dropin types [\#288](https://github.com/voxpupuli/puppet-systemd/pull/288) ([traylenator](https://github.com/traylenator))
+- Add support for Ubuntu 22.04 [\#278](https://github.com/voxpupuli/puppet-systemd/pull/278) ([simondeziel](https://github.com/simondeziel))
+- Notify services by default on drop in files [\#194](https://github.com/voxpupuli/puppet-systemd/pull/194) ([ekohl](https://github.com/ekohl))
+
+**Fixed bugs:**
+
+- systemd-timesyncd package should be managed, if required [\#294](https://github.com/voxpupuli/puppet-systemd/issues/294)
+- feat: manage timesyncd package on Debian \>= 11 and Ubuntu \>= 20.04 [\#296](https://github.com/voxpupuli/puppet-systemd/pull/296) ([saz](https://github.com/saz))
+- resolved: `onlyif` snippet requires shell support [\#293](https://github.com/voxpupuli/puppet-systemd/pull/293) ([simondeziel](https://github.com/simondeziel))
+- Correct docs for name var of systemd::dropin\_file [\#289](https://github.com/voxpupuli/puppet-systemd/pull/289) ([traylenator](https://github.com/traylenator))
+
+## [v3.10.0](https://github.com/voxpupuli/puppet-systemd/tree/v3.10.0) (2022-06-20)
+
+[Full Changelog](https://github.com/voxpupuli/puppet-systemd/compare/v3.9.0...v3.10.0)
+
+**Implemented enhancements:**
+
+- systemd::timer: move variable definition close to where it is used [\#280](https://github.com/voxpupuli/puppet-systemd/pull/280) ([simondeziel](https://github.com/simondeziel))
+- Add comment hint about initrd for folks [\#279](https://github.com/voxpupuli/puppet-systemd/pull/279) ([jcpunk](https://github.com/jcpunk))
+- Fix systemctl daemon-reload after file additions [\#277](https://github.com/voxpupuli/puppet-systemd/pull/277) ([trevor-vaughan](https://github.com/trevor-vaughan))
+- systemd::resolved: save readlink's value to avoid calling it twice [\#276](https://github.com/voxpupuli/puppet-systemd/pull/276) ([simondeziel](https://github.com/simondeziel))
+
+**Fixed bugs:**
+
+- systemd::dropin\_file doesn't cause a systemd daemon-reload [\#234](https://github.com/voxpupuli/puppet-systemd/issues/234)
+
+**Merged pull requests:**
+
+- Minor wordsmithing in README [\#283](https://github.com/voxpupuli/puppet-systemd/pull/283) ([op-ct](https://github.com/op-ct))
+- Correct spelling mistakes [\#275](https://github.com/voxpupuli/puppet-systemd/pull/275) ([EdwardBetts](https://github.com/EdwardBetts))
+
 ## [v3.9.0](https://github.com/voxpupuli/puppet-systemd/tree/v3.9.0) (2022-05-25)
 
 [Full Changelog](https://github.com/voxpupuli/puppet-systemd/compare/v3.8.0...v3.9.0)
@@ -20,7 +381,7 @@ These should not affect the functionality of the module.
 
 **Fixed bugs:**
 
-- Ensure systemd-networkd is available piror notifying service [\#269](https://github.com/voxpupuli/puppet-systemd/pull/269) ([mat1010](https://github.com/mat1010))
+- Ensure systemd-networkd is available prior to notifying service [\#269](https://github.com/voxpupuli/puppet-systemd/pull/269) ([mat1010](https://github.com/mat1010))
 
 **Closed issues:**
 
@@ -152,7 +513,7 @@ These should not affect the functionality of the module.
 
 **Implemented enhancements:**
 
-- Add support for strict mode for DNS over TLS [\#200](https://github.com/voxpupuli/puppet-systemd/pull/200) ([wobblesprout](https://github.com/wobblesprout))
+- Add support for strict mode for DNS over TLS [\#200](https://github.com/voxpupuli/puppet-systemd/pull/200) ([ghost](https://github.com/ghost))
 
 **Merged pull requests:**
 

@@ -1,4 +1,4 @@
-# Adds a set of custom limits to the service
+# Deprecated - Adds a set of custom limits to the service
 #
 # @api public
 #
@@ -27,7 +27,7 @@
 #   * Mutually exclusive with ``$limits``
 #
 # @param restart_service
-#   Restart the managed service after setting the limits
+#   Unused parameter for compatibility with older versions. Will fail if true is passed in.
 #
 define systemd::service_limits (
   Enum['present', 'absent', 'file'] $ensure                  = 'present',
@@ -35,19 +35,16 @@ define systemd::service_limits (
   Boolean                           $selinux_ignore_defaults = false,
   Optional[Systemd::ServiceLimits]  $limits                  = undef,
   Optional[String]                  $source                  = undef,
-  Boolean                           $restart_service         = true
+  Boolean                           $restart_service         = false,
 ) {
+  if $restart_service {
+    fail('The restart_service parameter is deprecated and only false is a valid value')
+  }
+
   include systemd
 
   if $name !~ Pattern['^.+\.(service|socket|mount|swap)$'] {
     fail('$name must match Pattern["^.+\.(service|socket|mount|swap)$"]')
-  }
-
-  if $limits and !empty($limits) {
-    $_content = template("${module_name}/limits.erb")
-  }
-  else {
-    $_content = undef
   }
 
   if $ensure != 'absent' {
@@ -59,23 +56,44 @@ define systemd::service_limits (
     }
   }
 
-  systemd::dropin_file { "${name}-90-limits.conf":
-    ensure                  => $ensure,
-    unit                    => $name,
-    filename                => '90-limits.conf',
-    path                    => $path,
-    selinux_ignore_defaults => $selinux_ignore_defaults,
-    content                 => $_content,
-    source                  => $source,
-  }
+  if $limits {
+    # Some typing changed between Systemd::ServiceLimits and Systemd::Unit::Service
+    $_now_tupled = [
+      'IODeviceWeight',
+      'IOReadBandwidthMax',
+      'IOWriteBandwidthMax',
+      'IOReadIOPSMax',
+      'IOWriteIOPSMax',
+    ]
 
-  if $restart_service {
-    exec { "restart ${name} because limits":
-      command     => "systemctl restart ${name}",
-      path        => $facts['path'],
-      refreshonly => true,
+    $_my_limits = $limits.map | $_directive, $_value | {
+      if $_directive in $_now_tupled {
+        { $_directive => $_value.map | $_pair | { Array($_pair).flatten } }  # Convert { 'a' => 'b' } to ['a', b']
+      } else {
+        { $_directive => $_value }
+      }
+    }.reduce | $_memo, $_value | { $_memo + $_value }
+
+    deprecation("systemd::service_limits - ${title}",'systemd::service_limits is deprecated, use systemd::manage_dropin')
+    systemd::manage_dropin { "${name}-90-limits.conf":
+      ensure                  => $ensure,
+      unit                    => $name,
+      filename                => '90-limits.conf',
+      path                    => $path,
+      selinux_ignore_defaults => $selinux_ignore_defaults,
+      service_entry           => $_my_limits,
+      notify_service          => true,
     }
-
-    Systemd::Dropin_file["${name}-90-limits.conf"] ~> Exec["restart ${name} because limits"]
+  } else {
+    deprecation("systemd::service_limits ${title}",'systemd::service_limits is deprecated, use systemd::dropin_file or systemd::manage_dropin')
+    systemd::dropin_file { "${name}-90-limits.conf":
+      ensure                  => $ensure,
+      unit                    => $name,
+      filename                => '90-limits.conf',
+      path                    => $path,
+      selinux_ignore_defaults => $selinux_ignore_defaults,
+      source                  => $source,
+      notify_service          => true,
+    }
   }
 }

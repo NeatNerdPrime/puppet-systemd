@@ -1,4 +1,5 @@
-# Matches Systemd Service Limit Struct
+# @summary Deprecated - Matches Systemd Service Limit Struct
+#
 type Systemd::ServiceLimits = Struct[
   {
     Optional['LimitCPU']            => Pattern['^\d+(s|m|h|d|w|M|y)?(:\d+(s|m|h|d|w|M|y)?)?$'],
@@ -27,6 +28,7 @@ type Systemd::ServiceLimits = Struct[
     Optional['MemoryHigh']          => Pattern['\A(infinity|\d+(K|M|G|T|%)?(:\d+(K|M|G|T|%)?)?)\z'],
     Optional['MemoryMax']           => Pattern['\A(infinity|\d+(K|M|G|T|%)?(:\d+(K|M|G|T|%)?)?)\z'],
     Optional['MemoryLimit']         => Pattern['\A(infinity|\d+(K|M|G|T|%)?(:\d+(K|M|G|T|%)?)?)\z'],
+    Optional['MemorySwapMax']       => Pattern['\A(infinity|\d+(K|M|G|T|%)?(:\d+(K|M|G|T|%)?)?)\z'],
     Optional['TasksAccounting']     => Boolean,
     Optional['TasksMax']            => Variant[Integer[1],Pattern['^(infinity|([1-9][0-9]?$|^100)%)$']],
     Optional['IOAccounting']        => Boolean,

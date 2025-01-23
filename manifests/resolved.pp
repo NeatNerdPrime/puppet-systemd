@@ -41,6 +41,9 @@
 # @param dns_stub_listener
 #   Takes a boolean argument or one of "udp" and "tcp".
 #
+# @param dns_stub_listener_extra
+#   Additional addresses for the DNS stub listener to listen on
+#
 # @param use_stub_resolver
 #   Takes a boolean argument. When "false" (default) it uses /run/systemd/resolve/resolv.conf
 #   as /etc/resolv.conf. When "true", it uses /run/systemd/resolve/stub-resolv.conf
@@ -54,8 +57,9 @@ class systemd::resolved (
   Optional[Variant[Boolean,Enum['resolve']]] $multicast_dns          = $systemd::multicast_dns,
   Optional[Variant[Boolean,Enum['allow-downgrade']]] $dnssec         = $systemd::dnssec,
   Optional[Variant[Boolean,Enum['yes', 'opportunistic', 'no']]] $dnsovertls = $systemd::dnsovertls,
-  Optional[Variant[Boolean,Enum['no-negative']]] $cache              = $systemd::cache,
-  Optional[Variant[Boolean,Enum['udp', 'tcp']]] $dns_stub_listener   = $systemd::dns_stub_listener,
+  Optional[Variant[Boolean,Enum['no-negative']]] $cache               = $systemd::cache,
+  Optional[Variant[Boolean,Enum['udp', 'tcp','absent']]] $dns_stub_listener = $systemd::dns_stub_listener,
+  Optional[Variant[Array[String[1]],Enum['absent']]] $dns_stub_listener_extra = $systemd::dns_stub_listener_extra,
   Boolean $use_stub_resolver                                         = $systemd::use_stub_resolver,
 ) {
   assert_private()
@@ -87,9 +91,10 @@ class systemd::resolved (
       # /etc/resolv.conf to something that might actually work on
       # reboot.
       exec { 'restore_resolv.conf_if_possible':
-        command => 'cp --remove-destination -f /run/systemd/resolve/resolv.conf /etc/resolv.conf',
-        onlyif  => 'l="$(readlink /etc/resolv.conf)"; test "$l" = "/run/systemd/resolve/resolv.conf" || test "$l" = "/run/systemd/resolve/stub-resolv.conf',
-        path    => $facts['path'],
+        command  => 'cp --remove-destination -f /run/systemd/resolve/resolv.conf /etc/resolv.conf',
+        onlyif   => 'l="$(readlink /etc/resolv.conf)"; test "$l" = "/run/systemd/resolve/resolv.conf" || test "$l" = "/run/systemd/resolve/stub-resolv.conf',
+        path     => $facts['path'],
+        provider => 'shell',
       }
     }
   }
@@ -217,7 +222,7 @@ class systemd::resolved (
     default => $cache,
   }
 
-  if $cache {
+  if $_cache {
     ini_setting { 'cache':
       ensure  => 'present',
       value   => $_cache,
@@ -234,11 +239,22 @@ class systemd::resolved (
     default => $dns_stub_listener,
   }
 
-  if $_dns_stub_listener {
+  if  $dns_stub_listener =~ String[1] {
     ini_setting { 'dns_stub_listener':
-      ensure  => 'present',
+      ensure  => stdlib::ensure($dns_stub_listener != 'absent'),
       value   => $_dns_stub_listener,
       setting => 'DNSStubListener',
+      section => 'Resolve',
+      path    => '/etc/systemd/resolved.conf',
+      notify  => Service['systemd-resolved'],
+    }
+  }
+
+  if $dns_stub_listener_extra =~ NotUndef {
+    ini_setting { 'dns_stub_listener_extra':
+      ensure  => stdlib::ensure($dns_stub_listener_extra != 'absent'),
+      value   => $dns_stub_listener_extra,
+      setting => 'DNSStubListenerExtra',
       section => 'Resolve',
       path    => '/etc/systemd/resolved.conf',
       notify  => Service['systemd-resolved'],

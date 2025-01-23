@@ -49,12 +49,6 @@
 # @param restart
 #   Specify a restart command manually. If left unspecified, a standard Puppet service restart happens.
 #
-# @param hasrestart
-#   maps to the same param on the service resource. Optional in the module because it's optional in the service resource type. This param is deprecated. Set it via $service_parameters.
-#
-# @param hasstatus
-#   maps to the same param on the service resource. true in the module because it's true in the service resource type. This param is deprecated. Set it via $service_parameters.
-#
 # @param selinux_ignore_defaults
 #   maps to the same param on the file resource for the unit. false in the module because it's false in the file resource type
 #
@@ -64,6 +58,9 @@
 # @param daemon_reload
 #   call `systemd::daemon-reload` to ensure that the modified unit file is loaded
 #
+# @param service_restart
+#   restart (notify) the service when unit file changed
+#
 # @example manage unit file + service
 #   systemd::unit_file { 'foo.service':
 #     content => file("${module_name}/foo.service"),
@@ -72,7 +69,7 @@
 #   }
 #
 define systemd::unit_file (
-  Enum['present', 'absent', 'file']        $ensure    = 'present',
+  Enum['present', 'absent']                $ensure    = 'present',
   Stdlib::Absolutepath                     $path      = '/etc/systemd/system',
   Optional[Variant[String, Sensitive[String], Deferred]] $content = undef,
   Optional[String]                         $source    = undef,
@@ -84,23 +81,14 @@ define systemd::unit_file (
   Optional[Variant[Boolean, Enum['mask']]] $enable    = undef,
   Optional[Boolean]                        $active    = undef,
   Optional[String]                         $restart   = undef,
-  Optional[Boolean]                        $hasrestart = undef,
-  Optional[Boolean]                        $hasstatus = undef,
   Boolean                                  $selinux_ignore_defaults = false,
   Hash[String[1], Any]                     $service_parameters = {},
-  Boolean                                  $daemon_reload = true
+  Boolean                                  $daemon_reload = true,
+  Boolean                                  $service_restart = true,
 ) {
   include systemd
 
   assert_type(Systemd::Unit, $name)
-
-  if $hasrestart =~ NotUndef {
-    deprecation("systemd::unit_file - ${title}", 'hasrestart is deprecated and will be removed in Version 4 of the module')
-  }
-
-  if $hasstatus =~ NotUndef {
-    deprecation("systemd::unit_file - ${title}", 'hasstatus is deprecated and will be removed in Version 4 of the module')
-  }
 
   if $enable == 'mask' {
     $_target = '/dev/null'
@@ -109,12 +97,9 @@ define systemd::unit_file (
   }
 
   if $_target {
-    $_ensure = 'link'
+    $_ensure = stdlib::ensure($ensure, 'link')
   } else {
-    $_ensure = $ensure ? {
-      'present' => 'file',
-      default   => $ensure,
-    }
+    $_ensure = stdlib::ensure($ensure, 'file')
   }
 
   file { "${path}/${name}":
@@ -137,13 +122,11 @@ define systemd::unit_file (
 
   if $enable != undef or $active != undef {
     service { $name:
-      ensure     => $active,
-      enable     => $enable,
-      restart    => $restart,
-      provider   => 'systemd',
-      hasrestart => $hasrestart,
-      hasstatus  => $hasstatus,
-      *          => $service_parameters,
+      ensure   => $active,
+      enable   => $enable,
+      restart  => $restart,
+      provider => 'systemd',
+      *        => $service_parameters,
     }
 
     if $ensure == 'absent' {
@@ -151,7 +134,7 @@ define systemd::unit_file (
         fail("Can't ensure the unit file is absent and activate/enable the service at the same time")
       }
       Service[$name] -> File["${path}/${name}"]
-    } else {
+    } elsif $service_restart {
       File["${path}/${name}"] ~> Service[$name]
 
       if $daemon_reload {

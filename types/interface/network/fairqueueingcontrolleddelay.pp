@@ -6,9 +6,9 @@ type Systemd::Interface::Network::Fairqueueingcontrolleddelay = Struct[{
   'PacketLimit'      => Optional[Integer[0,4294967294]],
   'MemoryLimitBytes' => Optional[String[1]],
   'Flows'            => Optional[String[1]],
-  'TargetSec'        => Optional[String[1]],
-  'IntervalSec'      => Optional[String[1]],
+  'TargetSec'        => Optional[Systemd::Timespan],
+  'IntervalSec'      => Optional[Systemd::Timespan],
   'QuantumBytes'     => Optional[String[1]],
   'ECN'              => Optional[Enum['yes','no']],
-  'CEThresholdSec'   => Optional[String[1]],
+  'CEThresholdSec'   => Optional[Systemd::Timespan],
 }]

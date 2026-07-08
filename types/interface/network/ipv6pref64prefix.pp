@@ -2,5 +2,5 @@
 # @see https://www.freedesktop.org/software/systemd/man/latest/systemd.network.html
 type Systemd::Interface::Network::Ipv6pref64prefix = Struct[{
   'Prefix'       => Optional[String[1]],
-  'LifetimeSec' => Optional[String[1]],
+  'LifetimeSec' => Optional[Systemd::Timespan],
 }]

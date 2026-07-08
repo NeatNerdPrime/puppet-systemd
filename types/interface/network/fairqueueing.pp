@@ -11,5 +11,5 @@ type Systemd::Interface::Network::Fairqueueing = Struct[{
   'Buckets'             => Optional[String[1]],
   'OrphanMask'          => Optional[Integer[0]],
   'Pacing'              => Optional[Enum['yes','no']],
-  'CEThresholdSec'      => Optional[String[1]],
+  'CEThresholdSec'      => Optional[Systemd::Timespan],
 }]

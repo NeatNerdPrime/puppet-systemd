@@ -28,6 +28,7 @@
 * `systemd::oomd`: This class manages and configures oomd.
 * `systemd::resolved`: This class provides an abstract way to trigger resolved.
 * `systemd::service_manager`: This class provides a solution to manage system and/or user service manager settings
+* `systemd::sleep`: This class manages and configures sleep.conf.
 * `systemd::timedatectl`: This class provides an abstract way to set elements with timedatectl
 * `systemd::timesyncd`: This class provides an abstract way to trigger systemd-timesyncd
 * `systemd::udevd`: This class manages systemd's udev config
@@ -170,6 +171,8 @@
 * [`Systemd::Output`](#Systemd--Output): Defines allowed output values
 * [`Systemd::ServiceManagerSettings`](#Systemd--ServiceManagerSettings): Matches Systemd system.conf/user.conf settings
 * [`Systemd::SettingEnsure`](#Systemd--SettingEnsure): Defines allowed ensure states for an ini_setting
+* [`Systemd::SleepSettings`](#Systemd--SleepSettings): Configurations for sleep.conf
+* [`Systemd::SleepSettings::Ensure`](#Systemd--SleepSettings--Ensure): Ensure parameter for sleep.conf settings
 * [`Systemd::Timespan`](#Systemd--Timespan): Defines a timespan type
 * [`Systemd::Unit`](#Systemd--Unit): custom datatype that validates different filenames for systemd units and unit templates
 * [`Systemd::Unit::Amount`](#Systemd--Unit--Amount): Systemd definition of amount, often bytes or united bytes
@@ -294,6 +297,8 @@ The following parameters are available in the `systemd` class:
 * [`oomd_package`](#-systemd--oomd_package)
 * [`oomd_ensure`](#-systemd--oomd_ensure)
 * [`oomd_settings`](#-systemd--oomd_settings)
+* [`manage_sleep`](#-systemd--manage_sleep)
+* [`sleep_settings`](#-systemd--sleep_settings)
 * [`udev_purge_rules`](#-systemd--udev_purge_rules)
 * [`manage_system_conf`](#-systemd--manage_system_conf)
 * [`system_settings`](#-systemd--system_settings)
@@ -1035,6 +1040,22 @@ Default value: `'running'`
 Data type: `Systemd::OomdSettings`
 
 Hash of systemd-oomd configurations for oomd.conf
+
+Default value: `{}`
+
+##### <a name="-systemd--manage_sleep"></a>`manage_sleep`
+
+Data type: `Boolean`
+
+Should systemd sleep configuration be managed
+
+Default value: `false`
+
+##### <a name="-systemd--sleep_settings"></a>`sleep_settings`
+
+Data type: `Systemd::SleepSettings`
+
+Config Hash that is used to configure settings in sleep.conf
 
 Default value: `{}`
 
@@ -6010,6 +6031,43 @@ Struct[{
 Defines allowed ensure states for an ini_setting
 
 Alias of `Struct[{ 'ensure' => Enum['absent'] }]`
+
+### <a name="Systemd--SleepSettings"></a>`Systemd::SleepSettings`
+
+Configurations for sleep.conf
+
+* **See also**
+  * https://www.freedesktop.org/software/systemd/man/systemd-sleep.conf.html
+
+Alias of
+
+```puppet
+Struct[{
+    Optional['AllowSuspend']               => Variant[Enum['yes','no',''],Systemd::SleepSettings::Ensure],
+    Optional['AllowHibernation']           => Variant[Enum['yes','no',''],Systemd::SleepSettings::Ensure],
+    Optional['AllowHybridSleep']           => Variant[Enum['yes','no',''],Systemd::SleepSettings::Ensure],
+    Optional['AllowSuspendThenHibernate']  => Variant[Enum['yes','no',''],Systemd::SleepSettings::Ensure],
+    Optional['SuspendState']               => Variant[String,Systemd::SleepSettings::Ensure],
+    Optional['HibernateMode']              => Variant[String,Systemd::SleepSettings::Ensure],
+    Optional['MemorySleepMode']            => Variant[String,Systemd::SleepSettings::Ensure],
+    Optional['HibernateDelaySec']          => Variant[Systemd::Unit::Timespan,Systemd::SleepSettings::Ensure],
+    Optional['HibernateOnACPower']         => Variant[Enum['yes','no',''],Systemd::SleepSettings::Ensure],
+    Optional['SuspendEstimationSec']       => Variant[Systemd::Unit::Timespan,Systemd::SleepSettings::Ensure],
+  }]
+```
+
+### <a name="Systemd--SleepSettings--Ensure"></a>`Systemd::SleepSettings::Ensure`
+
+Ensure parameter for sleep.conf settings
+
+Alias of
+
+```puppet
+Struct[{
+    Optional['ensure'] => Enum['present', 'absent'],
+    Optional['value']  => Any,
+  }]
+```
 
 ### <a name="Systemd--Timespan"></a>`Systemd::Timespan`
 

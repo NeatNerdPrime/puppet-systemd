@@ -449,6 +449,71 @@ describe 'systemd' do
           }
         end
 
+        context 'when enabling sleep with options' do
+          let(:params) do
+            {
+              manage_sleep: true,
+              sleep_settings: {
+                'AllowSuspend' => 'yes',
+                'AllowHibernation' => 'no',
+                'AllowHybridSleep' => '',
+                'SuspendState' => 'mem freeze',
+                'HibernateDelaySec' => '2h',
+                'HibernateOnACPower' => {
+                  'ensure' => 'absent',
+                },
+              },
+            }
+          end
+
+          it {
+            is_expected.to compile.with_all_deps
+            is_expected.to contain_class('systemd::sleep')
+            is_expected.to have_ini_setting_resource_count(6)
+            expect(subject).to contain_ini_setting('AllowSuspend').with(
+              path: '/etc/systemd/sleep.conf',
+              section: 'Sleep',
+              notify: 'Systemd::Daemon_reexec[sleep.conf]',
+              value: 'yes',
+            )
+
+            expect(subject).to contain_ini_setting('AllowHibernation').with(
+              path: '/etc/systemd/sleep.conf',
+              section: 'Sleep',
+              notify: 'Systemd::Daemon_reexec[sleep.conf]',
+              value: 'no',
+            )
+
+            expect(subject).to contain_ini_setting('AllowHybridSleep').with(
+              path: '/etc/systemd/sleep.conf',
+              section: 'Sleep',
+              notify: 'Systemd::Daemon_reexec[sleep.conf]',
+              value: '',
+            )
+
+            expect(subject).to contain_ini_setting('SuspendState').with(
+              path: '/etc/systemd/sleep.conf',
+              section: 'Sleep',
+              notify: 'Systemd::Daemon_reexec[sleep.conf]',
+              value: 'mem freeze',
+            )
+
+            expect(subject).to contain_ini_setting('HibernateDelaySec').with(
+              path: '/etc/systemd/sleep.conf',
+              section: 'Sleep',
+              notify: 'Systemd::Daemon_reexec[sleep.conf]',
+              value: '2h',
+            )
+
+            expect(subject).to contain_ini_setting('HibernateOnACPower').with(
+              path: '/etc/systemd/sleep.conf',
+              section: 'Sleep',
+              notify: 'Systemd::Daemon_reexec[sleep.conf]',
+              ensure: 'absent',
+            )
+          }
+        end
+
         context 'when enabling nspawn' do
           let(:params) do
             {

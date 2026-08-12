@@ -2,10 +2,10 @@
 # @see https://www.freedesktop.org/software/systemd/man/latest/systemd.netdev.html
 type Systemd::Interface::Netdev::Bridge = Struct[{
   'Description'          => Optional[String[1]],
-  'HelloTimeSec'         => Optional[Integer[1]],
-  'MaxAgeSec'            => Optional[Integer[1]],
-  'ForwardDelaySec'      => Optional[Integer[1]],
-  'AgeingTimeSec'        => Optional[Integer[1]],
+  'HelloTimeSec'         => Optional[Systemd::Timespan],
+  'MaxAgeSec'            => Optional[Systemd::Timespan],
+  'ForwardDelaySec'      => Optional[Systemd::Timespan],
+  'AgeingTimeSec'        => Optional[Systemd::Timespan],
   'Priority'             => Optional[Integer[0, 65535]],
   'GroupForwardMask'     => Optional[String[1]],
   'DefaultPVID'          => Optional[Variant[Enum['none'],String[1, 4094]]],

@@ -14,6 +14,6 @@ type Systemd::Interface::Network::Cake = Struct[{
   'FirewallMark'           => Optional[Integer[1,4294967295]],
   'Wash'                   => Optional[Enum['yes','no']],
   'SplitGSO'               => Optional[Enum['yes','no']],
-  'RTTSec'                 => Optional[String[1]],
+  'RTTSec'                 => Optional[Systemd::Timespan],
   'AckFilter'              => Optional[Enum['yes','no']],
 }]

@@ -211,7 +211,9 @@ define systemd::manage_unit (
     fail("Systemd::Manage_unit[${name}]: swap_entry is only valid for swap units")
   }
 
-  if $ensure != 'absent' and  $name =~ Pattern['^[^/]+\.service'] and !$service_entry {
+  # When enable='mask', units are symlinked to /dev/null, making type-specific
+  # entry parameters (service_entry, timer_entry, etc) unnecessary and can be omitted
+  if $ensure != 'absent' and $enable != 'mask' and $name =~ Pattern['^[^/]+\.service'] and !$service_entry {
     fail("Systemd::Manage_unit[${name}]: service_entry is required for service units")
   }
 

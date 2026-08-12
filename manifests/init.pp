@@ -298,6 +298,12 @@
 # @param oomd_settings
 #   Hash of systemd-oomd configurations for oomd.conf
 #
+# @param manage_sleep
+#   Should systemd sleep configuration be managed
+#
+# @param sleep_settings
+#   Config Hash that is used to configure settings in sleep.conf
+#
 # @param udev_purge_rules
 #   Toggle if unmanaged files in /etc/udev/rules.d should be purged if manage_udevd is enabled
 #
@@ -409,6 +415,8 @@ class systemd (
   Optional[String[1]]                                 $oomd_package = undef,
   Enum['stopped','running']                           $oomd_ensure = 'running',
   Systemd::OomdSettings                               $oomd_settings = {},
+  Boolean                                             $manage_sleep = false,
+  Systemd::SleepSettings                              $sleep_settings = {},
   Boolean                                             $udev_purge_rules = false,
   Boolean                                             $manage_system_conf = false,
   Systemd::ServiceManagerSettings                     $system_settings = {},
@@ -499,6 +507,11 @@ class systemd (
 
   if $manage_oomd {
     contain systemd::oomd
+  }
+
+  if $manage_sleep {
+    contain systemd::sleep
+    ensure_resource('systemd::daemon_reexec', 'sleep.conf')
   }
 
   $dropin_files.each |$name, $resource| {

@@ -185,6 +185,139 @@ describe 'systemd::manage_unit' do
           }
         end
 
+        context 'when masking a service unit without service_entry' do
+          let(:title) { 'masked.service' }
+
+          let(:params) do
+            {
+              enable: 'mask',
+            }
+          end
+
+          it { is_expected.to compile.with_all_deps }
+
+          it {
+            is_expected.to contain_file('/etc/systemd/system/masked.service').with(
+              ensure: 'link',
+              target: '/dev/null',
+            )
+          }
+        end
+
+        context 'when masking a timer unit without timer_entry' do
+          let(:title) { 'masked.timer' }
+
+          let(:params) do
+            {
+              enable: 'mask',
+            }
+          end
+
+          it { is_expected.to compile.with_all_deps }
+
+          it {
+            is_expected.to contain_file('/etc/systemd/system/masked.timer').with(
+              ensure: 'link',
+              target: '/dev/null',
+            )
+          }
+        end
+
+        context 'when masking a socket unit without socket_entry' do
+          let(:title) { 'masked.socket' }
+
+          let(:params) do
+            {
+              enable: 'mask',
+            }
+          end
+
+          it { is_expected.to compile.with_all_deps }
+
+          it {
+            is_expected.to contain_file('/etc/systemd/system/masked.socket').with(
+              ensure: 'link',
+              target: '/dev/null',
+            )
+          }
+        end
+
+        context 'when masking a path unit without path_entry' do
+          let(:title) { 'masked.path' }
+
+          let(:params) do
+            {
+              enable: 'mask',
+            }
+          end
+
+          it { is_expected.to compile.with_all_deps }
+
+          it {
+            is_expected.to contain_file('/etc/systemd/system/masked.path').with(
+              ensure: 'link',
+              target: '/dev/null',
+            )
+          }
+        end
+
+        context 'when masking a slice unit without slice_entry' do
+          let(:title) { 'masked.slice' }
+
+          let(:params) do
+            {
+              enable: 'mask',
+            }
+          end
+
+          it { is_expected.to compile.with_all_deps }
+
+          it {
+            is_expected.to contain_file('/etc/systemd/system/masked.slice').with(
+              ensure: 'link',
+              target: '/dev/null',
+            )
+          }
+        end
+
+        context 'when masking an automount unit without automount_entry' do
+          let(:title) { 'masked.automount' }
+
+          let(:params) do
+            {
+              enable: 'mask',
+            }
+          end
+
+          it { is_expected.to compile.with_all_deps }
+
+          it {
+            is_expected.to contain_file('/etc/systemd/system/masked.automount').with(
+              ensure: 'link',
+              target: '/dev/null',
+            )
+          }
+        end
+
+        context 'when masking a swap unit without swap_entry' do
+          let(:title) { 'masked.swap' }
+
+          let(:params) do
+            {
+              enable: 'mask',
+            }
+          end
+
+          it { is_expected.to compile.with_all_deps }
+
+          it {
+            is_expected.to contain_file('/etc/systemd/system/masked.swap').with(
+              ensure: 'link',
+              target: '/dev/null',
+            )
+          }
+        end
+
         context 'on a swap' do
           let(:title) { 'file.swap' }
 

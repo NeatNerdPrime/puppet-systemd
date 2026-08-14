@@ -192,6 +192,12 @@
 # @param journald_settings
 #   Config Hash that is used to configure settings in journald.conf
 #
+# @param journald_use_etc_conf
+#  Whether to use the /etc/systemd/journald.conf file.
+#
+# @param journald_purge_dropin_dirs
+#  Whether to purge the journald dropin directories. This will remove any files in the dropin directories that are not managed by Puppet.
+#
 # @param manage_journal_upload
 #   Manage the systemd journal upload to a remote server
 #
@@ -383,6 +389,8 @@ class systemd (
   Boolean                                             $purge_dropin_dirs = true,
   Boolean                                             $manage_journald = true,
   Systemd::JournaldSettings                           $journald_settings = {},
+  Boolean                                             $journald_use_etc_conf = true,
+  Boolean                                             $journald_purge_dropin_dirs = false,
   Boolean                                             $manage_journal_upload = false,
   Systemd::JournalUploadSettings                      $journal_upload_settings = {},
   Boolean                                             $manage_journal_remote = false,

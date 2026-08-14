@@ -884,6 +884,7 @@ describe 'systemd' do
           it {
             is_expected.to compile.with_all_deps
             is_expected.not_to contain_service('systemd-journald')
+            is_expected.not_to contain_file('/etc/systemd/journald.conf')
           }
         end
 

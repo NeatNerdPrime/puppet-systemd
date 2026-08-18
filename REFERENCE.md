@@ -38,6 +38,8 @@
 * [`systemd::daemon_reexec`](#systemd--daemon_reexec): Run systemctl daemon-reexec
 * [`systemd::daemon_reload`](#systemd--daemon_reload): Run systemctl daemon-reload
 * [`systemd::dropin_file`](#systemd--dropin_file): Creates a drop-in file for a systemd unit
+* [`systemd::journald::dropin_file`](#systemd--journald--dropin_file): Creates a drop-in file for journald configuration
+* [`systemd::journald::manage_dropin`](#systemd--journald--manage_dropin): Creates a drop-in file for journald configuration from a template
 * [`systemd::manage_dropin`](#systemd--manage_dropin): Creates a drop-in file for a systemd unit from a template
 * [`systemd::manage_unit`](#systemd--manage_unit): Generate unit file from template
 * [`systemd::modules_load`](#systemd--modules_load): Creates a modules-load.d drop file
@@ -264,6 +266,8 @@ The following parameters are available in the `systemd` class:
 * [`set_local_rtc`](#-systemd--set_local_rtc)
 * [`manage_journald`](#-systemd--manage_journald)
 * [`journald_settings`](#-systemd--journald_settings)
+* [`journald_use_etc_conf`](#-systemd--journald_use_etc_conf)
+* [`journald_purge_dropin_dirs`](#-systemd--journald_purge_dropin_dirs)
 * [`manage_journal_upload`](#-systemd--manage_journal_upload)
 * [`journal_upload_settings`](#-systemd--journal_upload_settings)
 * [`manage_journal_remote`](#-systemd--manage_journal_remote)
@@ -770,6 +774,22 @@ Data type: `Systemd::JournaldSettings`
 Config Hash that is used to configure settings in journald.conf
 
 Default value: `{}`
+
+##### <a name="-systemd--journald_use_etc_conf"></a>`journald_use_etc_conf`
+
+Data type: `Boolean`
+
+Whether to use the /etc/systemd/journald.conf file.
+
+Default value: `true`
+
+##### <a name="-systemd--journald_purge_dropin_dirs"></a>`journald_purge_dropin_dirs`
+
+Data type: `Boolean`
+
+Whether to purge the journald dropin directories. This will remove any files in the dropin directories that are not managed by Puppet.
+
+Default value: `false`
 
 ##### <a name="-systemd--manage_journal_upload"></a>`manage_journal_upload`
 
@@ -1457,6 +1477,214 @@ Data type: `Boolean`
 Call systemd::daemon_reload
 
 Default value: `true`
+
+### <a name="systemd--journald--dropin_file"></a>`systemd::journald::dropin_file`
+
+Creates a drop-in file for journald configuration
+
+* **See also**
+  * journald.conf(5)
+
+#### Parameters
+
+The following parameters are available in the `systemd::journald::dropin_file` defined type:
+
+* [`filename`](#-systemd--journald--dropin_file--filename)
+* [`ensure`](#-systemd--journald--dropin_file--ensure)
+* [`path`](#-systemd--journald--dropin_file--path)
+* [`selinux_ignore_defaults`](#-systemd--journald--dropin_file--selinux_ignore_defaults)
+* [`content`](#-systemd--journald--dropin_file--content)
+* [`source`](#-systemd--journald--dropin_file--source)
+* [`owner`](#-systemd--journald--dropin_file--owner)
+* [`group`](#-systemd--journald--dropin_file--group)
+* [`mode`](#-systemd--journald--dropin_file--mode)
+* [`show_diff`](#-systemd--journald--dropin_file--show_diff)
+* [`notify_journald`](#-systemd--journald--dropin_file--notify_journald)
+
+##### <a name="-systemd--journald--dropin_file--filename"></a>`filename`
+
+Data type: `Systemd::Dropin`
+
+The filename of the drop in. The full path is determined using the path and this filename.
+
+Default value: `$name`
+
+##### <a name="-systemd--journald--dropin_file--ensure"></a>`ensure`
+
+Data type: `Enum['present', 'absent', 'file']`
+
+the state of this dropin file
+
+Default value: `'present'`
+
+##### <a name="-systemd--journald--dropin_file--path"></a>`path`
+
+Data type: `Stdlib::Absolutepath`
+
+The journald dropin configuration path
+
+Default value: `'/etc/systemd/journald.conf.d'`
+
+##### <a name="-systemd--journald--dropin_file--selinux_ignore_defaults"></a>`selinux_ignore_defaults`
+
+Data type: `Boolean`
+
+If Puppet should ignore the default SELinux labels.
+
+Default value: `false`
+
+##### <a name="-systemd--journald--dropin_file--content"></a>`content`
+
+Data type: `Optional[Variant[String,Sensitive[String]]]`
+
+The full content of the unit file (Mutually exclusive with `$source`)
+
+Default value: `undef`
+
+##### <a name="-systemd--journald--dropin_file--source"></a>`source`
+
+Data type: `Optional[String]`
+
+The `File` resource compatible `source` (Mutually exclusive with `$content`)
+
+Default value: `undef`
+
+##### <a name="-systemd--journald--dropin_file--owner"></a>`owner`
+
+Data type: `String[1]`
+
+The owner to set on the dropin file
+
+Default value: `'root'`
+
+##### <a name="-systemd--journald--dropin_file--group"></a>`group`
+
+Data type: `String[1]`
+
+The group to set on the dropin file
+
+Default value: `'root'`
+
+##### <a name="-systemd--journald--dropin_file--mode"></a>`mode`
+
+Data type: `Stdlib::Filemode`
+
+The mode to set on the dropin file
+
+Default value: `'0644'`
+
+##### <a name="-systemd--journald--dropin_file--show_diff"></a>`show_diff`
+
+Data type: `Boolean`
+
+Whether to show the diff when updating dropin file
+
+Default value: `true`
+
+##### <a name="-systemd--journald--dropin_file--notify_journald"></a>`notify_journald`
+
+Data type: `Boolean`
+
+Restart the journald service if the dropin file changes
+
+Default value: `true`
+
+### <a name="systemd--journald--manage_dropin"></a>`systemd::journald::manage_dropin`
+
+Creates a drop-in file for journald configuration from a template
+
+#### Parameters
+
+The following parameters are available in the `systemd::journald::manage_dropin` defined type:
+
+* [`filename`](#-systemd--journald--manage_dropin--filename)
+* [`ensure`](#-systemd--journald--manage_dropin--ensure)
+* [`path`](#-systemd--journald--manage_dropin--path)
+* [`selinux_ignore_defaults`](#-systemd--journald--manage_dropin--selinux_ignore_defaults)
+* [`owner`](#-systemd--journald--manage_dropin--owner)
+* [`group`](#-systemd--journald--manage_dropin--group)
+* [`mode`](#-systemd--journald--manage_dropin--mode)
+* [`show_diff`](#-systemd--journald--manage_dropin--show_diff)
+* [`notify_journald`](#-systemd--journald--manage_dropin--notify_journald)
+* [`journal_entry`](#-systemd--journald--manage_dropin--journal_entry)
+
+##### <a name="-systemd--journald--manage_dropin--filename"></a>`filename`
+
+Data type: `Systemd::Dropin`
+
+The filename of the drop in. The full path is determined using the path and this filename.
+
+Default value: `$name`
+
+##### <a name="-systemd--journald--manage_dropin--ensure"></a>`ensure`
+
+Data type: `Enum['present', 'absent']`
+
+the state of this dropin file
+
+Default value: `'present'`
+
+##### <a name="-systemd--journald--manage_dropin--path"></a>`path`
+
+Data type: `Optional[Stdlib::Absolutepath]`
+
+The journald dropin configuration path
+
+Default value: `undef`
+
+##### <a name="-systemd--journald--manage_dropin--selinux_ignore_defaults"></a>`selinux_ignore_defaults`
+
+Data type: `Optional[Boolean]`
+
+If Puppet should ignore the default SELinux labels.
+
+Default value: `undef`
+
+##### <a name="-systemd--journald--manage_dropin--owner"></a>`owner`
+
+Data type: `Optional[String[1]]`
+
+The owner to set on the dropin file
+
+Default value: `undef`
+
+##### <a name="-systemd--journald--manage_dropin--group"></a>`group`
+
+Data type: `Optional[String[1]]`
+
+The group to set on the dropin file
+
+Default value: `undef`
+
+##### <a name="-systemd--journald--manage_dropin--mode"></a>`mode`
+
+Data type: `Optional[Stdlib::Filemode]`
+
+The mode to set on the dropin file
+
+Default value: `undef`
+
+##### <a name="-systemd--journald--manage_dropin--show_diff"></a>`show_diff`
+
+Data type: `Optional[Boolean]`
+
+Whether to show the diff when updating dropin file
+
+Default value: `undef`
+
+##### <a name="-systemd--journald--manage_dropin--notify_journald"></a>`notify_journald`
+
+Data type: `Optional[Boolean]`
+
+Restart the journald service if the dropin file changes
+
+Default value: `undef`
+
+##### <a name="-systemd--journald--manage_dropin--journal_entry"></a>`journal_entry`
+
+Data type: `Systemd::JournaldSettings`
+
+key value pairs for the [Journal] section of the dropin file
 
 ### <a name="systemd--manage_dropin"></a>`systemd::manage_dropin`
 

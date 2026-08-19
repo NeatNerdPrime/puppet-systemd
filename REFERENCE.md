@@ -1700,6 +1700,7 @@ Creates a drop-in file for a systemd unit from a template
 ```puppet
 systemd::manage_dropin { 'myconf.conf':
   ensure        => present,
+  comments      => ['one', 'two'],
   unit          => 'myservice.service',
   service_entry => {
     'Type'      => 'oneshot',
@@ -1809,6 +1810,7 @@ The following parameters are available in the `systemd::manage_dropin` defined t
 * [`show_diff`](#-systemd--manage_dropin--show_diff)
 * [`notify_service`](#-systemd--manage_dropin--notify_service)
 * [`daemon_reload`](#-systemd--manage_dropin--daemon_reload)
+* [`comments`](#-systemd--manage_dropin--comments)
 * [`unit_entry`](#-systemd--manage_dropin--unit_entry)
 * [`manager_entry`](#-systemd--manage_dropin--manager_entry)
 * [`slice_entry`](#-systemd--manage_dropin--slice_entry)
@@ -1906,6 +1908,14 @@ Data type: `Boolean`
 Call systemd::daemon_reload
 
 Default value: `true`
+
+##### <a name="-systemd--manage_dropin--comments"></a>`comments`
+
+Data type: `Optional[Array[String]]`
+
+an array of strings to add as top level comments to the unit file.
+
+Default value: `undef`
 
 ##### <a name="-systemd--manage_dropin--unit_entry"></a>`unit_entry`
 
@@ -2008,6 +2018,7 @@ Generate unit file from template
 
 ```puppet
 systemd::manage_unit { 'myrunner.service':
+  comments      => ['one', 'two'],
   unit_entry    => {
     'Description' => 'My great service',
   },
@@ -2160,6 +2171,7 @@ The following parameters are available in the `systemd::manage_unit` defined typ
 * [`service_parameters`](#-systemd--manage_unit--service_parameters)
 * [`daemon_reload`](#-systemd--manage_unit--daemon_reload)
 * [`service_restart`](#-systemd--manage_unit--service_restart)
+* [`comments`](#-systemd--manage_unit--comments)
 * [`unit_entry`](#-systemd--manage_unit--unit_entry)
 * [`slice_entry`](#-systemd--manage_unit--slice_entry)
 * [`service_entry`](#-systemd--manage_unit--service_entry)
@@ -2280,6 +2292,14 @@ Data type: `Boolean`
 restart (notify) the service when unit file changed
 
 Default value: `true`
+
+##### <a name="-systemd--manage_unit--comments"></a>`comments`
+
+Data type: `Optional[Array[String]]`
+
+an array of strings to add as top level comments to the unit file.
+
+Default value: `undef`
 
 ##### <a name="-systemd--manage_unit--unit_entry"></a>`unit_entry`
 

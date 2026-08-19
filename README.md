@@ -98,6 +98,9 @@ systemd::manage_unit { 'myrunner.service':
 The parameters `unit_entry`, `service_entry` and `install_entry` populate the
 `[Unit]`, `[Service]` and `[Install]` sections of the generated unit file.
 
+You may add an optional `comments` of `Array[String]` to provide additional comment
+at the top of the unit file.
+
 Similarly units can be created from hiera yaml files
 
 ```yaml
@@ -231,6 +234,9 @@ systemd::manage_dropins:
 ```
 
 The filename of the drop in. The full path is determined using the path, unit and this filename.
+
+You may add an optional `comments` of `Array[String]` to provide additional comment at the top
+of the dropin file.
 
 ### modules-load.d
 

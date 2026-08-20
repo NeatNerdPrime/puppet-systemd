@@ -6,6 +6,7 @@
 #
 # @example Generate a service
 #   systemd::manage_unit { 'myrunner.service':
+#     comments      => ['one', 'two'],
 #     unit_entry    => {
 #       'Description' => 'My great service',
 #     },
@@ -145,6 +146,7 @@
 # @param service_restart
 #   restart (notify) the service when unit file changed
 #
+# @param comments an array of strings to add as top level comments to the unit file.
 # @param unit_entry  key value pairs for [Unit] section of the unit file.
 # @param slice_entry key value pairs for [Slice] section of the unit file
 # @param service_entry key value pairs for [Service] section of the unit file.
@@ -170,6 +172,7 @@ define systemd::manage_unit (
   Hash[String[1], Any]                     $service_parameters      = {},
   Boolean                                  $daemon_reload           = true,
   Boolean                                  $service_restart         = true,
+  Optional[Array[String]]                  $comments                = undef,
   Optional[Systemd::Unit::Install]         $install_entry           = undef,
   Optional[Systemd::Unit::Unit]            $unit_entry              = undef,
   Optional[Systemd::Unit::Slice]           $slice_entry             = undef,
@@ -232,6 +235,7 @@ define systemd::manage_unit (
     service_restart         => $service_restart,
     content                 => epp('systemd/unit_file.epp',
       {
+        'comments'        => $comments,
         'unit_entry'      => $unit_entry,
         'manager_entry'   => undef,
         'slice_entry'     => $slice_entry,

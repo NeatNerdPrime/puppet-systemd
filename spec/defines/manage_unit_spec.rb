@@ -13,6 +13,10 @@ describe 'systemd::manage_unit' do
         context 'with an arrayed description and simple parameters set' do
           let(:params) do
             {
+              comments: [
+                'some comment',
+                '  some other comment',
+              ],
               unit_entry: {
                 Description: ['My great service', 'has two lines of description'],
                 DefaultDependencies: true,
@@ -34,6 +38,8 @@ describe 'systemd::manage_unit' do
 
           it {
             is_expected.to contain_systemd__unit_file('foobar.service')
+              .with_content(%r{^# some comment})
+              .with_content(%r{^#   some other comment})
               .with_content(%r{^\[Unit\]$})
               .with_content(%r{^DefaultDependencies=true$})
               .with_content(%r{^\[Service\]$})

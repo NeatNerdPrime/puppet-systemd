@@ -41,6 +41,10 @@ describe 'systemd::manage_dropin' do
           context 'setting some parameters simply' do
             let(:params) do
               super().merge(
+                comments: [
+                  'a comment',
+                  'a second comment',
+                ],
                 unit_entry: {
                   DefaultDependencies: true,
                 },
@@ -59,6 +63,8 @@ describe 'systemd::manage_dropin' do
 
             it {
               is_expected.to contain_systemd__dropin_file('foobar.conf')
+                .with_content(%r{^# a comment})
+                .with_content(%r{^# a second comment})
                 .with_content(%r{^LimitCORE=infinity$})
                 .with_content(%r{^DefaultDependencies=true$})
                 .with_content(%r{^SyslogIdentifier=simple$})

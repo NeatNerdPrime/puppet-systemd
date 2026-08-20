@@ -7,6 +7,7 @@
 # @example drop in file to change Type and override ExecStart
 #   systemd::manage_dropin { 'myconf.conf':
 #     ensure        => present,
+#     comments      => ['one', 'two'],
 #     unit          => 'myservice.service',
 #     service_entry => {
 #       'Type'      => 'oneshot',
@@ -90,6 +91,7 @@
 # @param show_diff Whether to show the diff when updating dropin file
 # @param notify_service Notify a service for the unit, if it exists
 # @param daemon_reload Call systemd::daemon_reload
+# @param comments an array of strings to add as top level comments to the unit file.
 # @param unit_entry key value pairs for [Unit] section of the unit file
 # @param manager_entry key value pairs for [Manager] section of the system.conf/user.conf file
 # @param slice_entry key value pairs for [Slice] section of the unit file
@@ -114,6 +116,7 @@ define systemd::manage_dropin (
   Boolean                          $show_diff               = true,
   Boolean                          $notify_service          = false,
   Boolean                          $daemon_reload           = true,
+  Optional[Array[String]]          $comments                = undef,
   Optional[Systemd::Unit::Install] $install_entry           = undef,
   Optional[Systemd::Unit::Unit]    $unit_entry              = undef,
   Optional[Systemd::Unit::Manager] $manager_entry           = undef,
@@ -180,6 +183,7 @@ define systemd::manage_dropin (
     daemon_reload           => $daemon_reload,
     content                 => epp('systemd/unit_file.epp',
       {
+        'comments'        => $comments,
         'unit_entry'      => $unit_entry,
         'manager_entry'   => $manager_entry,
         'slice_entry'     => $slice_entry,

@@ -1,15 +1,16 @@
 <%- |
- Optional[Hash] $unit_entry,
- Optional[Hash] $manager_entry,
- Optional[Hash] $slice_entry,
- Optional[Hash] $service_entry,
- Optional[Hash] $install_entry,
- Optional[Hash] $timer_entry,
- Optional[Hash] $path_entry,
- Optional[Hash] $socket_entry,
- Optional[Hash] $automount_entry,
- Optional[Hash] $mount_entry,
- Optional[Hash] $swap_entry,
+ Optional[Hash] $unit_entry        = undef,
+ Optional[Hash] $manager_entry     = undef,
+ Optional[Hash] $slice_entry       = undef,
+ Optional[Hash] $service_entry     = undef,
+ Optional[Hash] $install_entry     = undef,
+ Optional[Hash] $timer_entry       = undef,
+ Optional[Hash] $path_entry        = undef,
+ Optional[Hash] $socket_entry      = undef,
+ Optional[Hash] $automount_entry   = undef,
+ Optional[Hash] $mount_entry       = undef,
+ Optional[Hash] $swap_entry        = undef,
+ Optional[Array[String]] $comments = undef,
 | -%>
 <%-
 
@@ -41,6 +42,12 @@ $_tupled_values = [
 
 -%>
 # Deployed with puppet<%# DO NOT EDIT THIS HEADER! The `systemd_purge_units` type depends on it. %>
+<% if $comments { -%>
+#
+<%   $comments.each |$msg| { -%>
+# <%= $msg %>
+<%   } -%>
+<% } -%>
 #
 <%-
 $_unit_sections.each | $_section | {

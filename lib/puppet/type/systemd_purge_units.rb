@@ -30,6 +30,7 @@ Puppet::Type.newtype(:systemd_purge_units) do
   # Similar to crayfishx/purge, this ensurable block is here to make sure _this_ resource
   # enters a changed state when there are any generated resources that have been purged.
   ensurable do
+    desc 'The basic property that the resource should be in.'
     defaultto(:purged)
     newvalue(:purgable)
     newvalue(:purged) do
